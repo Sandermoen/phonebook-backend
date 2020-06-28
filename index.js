@@ -1,4 +1,6 @@
 const express = require('express');
+const path = require('path');
+const cors = require('cors');
 const app = express();
 
 let persons = [
@@ -20,6 +22,7 @@ let persons = [
 ];
 
 const PORT = process.env.PORT || 3001;
+app.use(cors());
 app.use(express.json());
 if (process.env.NODE_ENV === 'development') {
   const morgan = require('morgan');
@@ -31,6 +34,8 @@ if (process.env.NODE_ENV === 'development') {
       ':method :url :status :response-time ms - :body - :req[content-length]'
     )
   );
+} else if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('build'));
 }
 
 app.get('/api/persons', (req, res) => {
