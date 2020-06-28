@@ -1,6 +1,5 @@
 const express = require('express');
 const app = express();
-const morgan = require('morgan');
 
 let persons = [
   {
@@ -22,14 +21,17 @@ let persons = [
 
 const PORT = process.env.PORT || 3001;
 app.use(express.json());
-morgan.token('body', function (req, res) {
-  return JSON.stringify(req.body);
-});
-app.use(
-  morgan(
-    ':method :url :status :response-time ms - :body - :req[content-length]'
-  )
-);
+if (process.env.NODE_ENV === 'development') {
+  const morgan = require('morgan');
+  morgan.token('body', function (req, res) {
+    return JSON.stringify(req.body);
+  });
+  app.use(
+    morgan(
+      ':method :url :status :response-time ms - :body - :req[content-length]'
+    )
+  );
+}
 
 app.get('/api/persons', (req, res) => {
   res.send(persons);
