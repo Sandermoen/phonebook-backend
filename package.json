@@ -6,13 +6,15 @@
   "scripts": {
     "build:ui": "rm -rf build && cd ../../part2/phonebook && npm run build --prod && cp -r build ../../part3/phonebook-backend/",
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "dotenv": "^8.2.0",
+    "eslint": "^7.3.1",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.4"
   },

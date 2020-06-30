@@ -4,7 +4,6 @@ const cors = require('cors');
 const app = express();
 
 const Person = require('./models/Person');
-const { response } = require('express');
 
 const PORT = process.env.PORT || 3001;
 
@@ -13,7 +12,7 @@ app.use(express.json());
 if (process.env.NODE_ENV === 'development' || !process.env.NODE_ENV) {
   require('dotenv').config();
   const morgan = require('morgan');
-  morgan.token('body', function (req, res) {
+  morgan.token('body', function (req) {
     return JSON.stringify(req.body);
   });
   app.use(
