@@ -29,6 +29,7 @@ mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+mongoose.set('useFindAndModify', false);
 
 app.get('/api/persons', (req, res) => {
   Person.find({}).then((persons) => {
@@ -76,7 +77,7 @@ app.post('/api/persons', (req, res) => {
   });
 
   person.save().then(() => {
-    res.status(201).end();
+    res.status(201).send({ error: false, id: person._id.toString() });
   });
 });
 
