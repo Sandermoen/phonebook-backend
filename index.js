@@ -26,6 +26,7 @@ if (process.env.NODE_ENV === 'development' || !process.env.NODE_ENV) {
 }
 
 mongoose.connect(process.env.MONGO_URI, {
+  useCreateIndex: true,
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -66,7 +67,7 @@ app.delete('/api/persons/:personId', (req, res, next) => {
     .catch((err) => next(err));
 });
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
   const { name, number } = req.body;
   if (!name || !number) {
     return res.status(400).send({ error: 'Include both a name and a number.' });
@@ -76,15 +77,18 @@ app.post('/api/persons', (req, res) => {
     number,
   });
 
-  person.save().then(() => {
-    res.status(201).send({ error: false, id: person._id.toString() });
-  });
+  person
+    .save()
+    .then(() => {
+      res.status(201).send({ error: false, id: person._id.toString() });
+    })
+    .catch((err) => next(err));
 });
 
 app.put('/api/persons/:personId', (req, res, next) => {
   const { personId } = req.params;
   const { number } = req.body;
-  Person.findByIdAndUpdate(personId, { number })
+  Person.findByIdAndUpdate(personId, { number }, { runValidators: true })
     .then((update) => {
       console.log(update);
       res.status(200).end();
@@ -97,9 +101,12 @@ app.listen(PORT, () => {
 });
 
 const errorHandler = (err, req, res, next) => {
-  console.log(err.message);
+  console.log(err);
   if (err.name === 'CastError') {
-    return response.status(400).send({ error: 'Malformatted id' });
+    return res.status(400).send({ error: 'Malformatted id' });
+  }
+  if (err.name === 'ValidationError') {
+    return res.status(400).send({ error: err.message });
   }
   next(err);
 };
